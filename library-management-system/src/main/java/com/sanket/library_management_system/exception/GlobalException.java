@@ -9,14 +9,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalException {
 
-    @ExceptionHandler(GenreException.class)
+    @ExceptionHandler({
+            GenreException.class,
+            BookException.class,
+            Exception.class,
+            UserException.class
+    })
     public ResponseEntity<ApiResponse> handleException(GenreException e){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ApiResponse(e.getMessage(), false));
-    }
-
-    @ExceptionHandler(BookException.class)
-    public ResponseEntity<ApiResponse> handleBookException(BookException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiResponse(e.getMessage(), false));
     }
