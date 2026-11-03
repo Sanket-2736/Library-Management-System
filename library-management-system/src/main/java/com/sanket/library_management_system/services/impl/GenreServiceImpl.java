@@ -2,10 +2,14 @@ package com.sanket.library_management_system.services.impl;
 
 import com.sanket.library_management_system.exception.GenreException;
 import com.sanket.library_management_system.mapper.GenreMapper;
+import com.sanket.library_management_system.model.Book;
 import com.sanket.library_management_system.model.Genre;
+import com.sanket.library_management_system.payload.dto.BookDTO;
 import com.sanket.library_management_system.payload.dto.GenreDTO;
 import com.sanket.library_management_system.repository.GenreRepository;
+import com.sanket.library_management_system.services.BookService;
 import com.sanket.library_management_system.services.GenreService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+//@RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
     @Autowired
     private GenreRepository genreRepository;
@@ -20,8 +25,12 @@ public class GenreServiceImpl implements GenreService {
     @Autowired
     private final GenreMapper genreMapper;
 
-    public GenreServiceImpl(GenreMapper genreMapper) {
+    @Autowired
+    private final BookService bookService;
+
+    public GenreServiceImpl(GenreMapper genreMapper, BookService bookService) {
         this.genreMapper = genreMapper;
+        this.bookService = bookService;
     }
 
     @Override
@@ -89,6 +98,12 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public long getBookCountByGenreId(Long genreId) {
-        return 0;
+        List<BookDTO> books = bookService.getAllBooks();
+        long count = 0;
+
+        for(BookDTO dto : books)
+            if(dto.getGenreId() == genreId) count++;
+
+        return count;
     }
 }
