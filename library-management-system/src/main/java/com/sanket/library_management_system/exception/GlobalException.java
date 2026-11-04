@@ -13,7 +13,8 @@ public class GlobalException {
             GenreException.class,
             BookException.class,
             Exception.class,
-            UserException.class
+            UserException.class,
+            EmailException.class
     })
     public ResponseEntity<ApiResponse> handleException(GenreException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

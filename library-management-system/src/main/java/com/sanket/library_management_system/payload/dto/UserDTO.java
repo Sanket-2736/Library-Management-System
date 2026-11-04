@@ -18,11 +18,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class UserDTO {
     private Long id;
+    @NotNull(message = "Email is required!")
     private String email;
+    @NotNull(message = "Full Name is required!")
     private String fullName;
     private String role;
     private String phone;
     private String profileImage;
     private LocalDateTime lastLogin;
-    private String password = null;
+
+    @NotNull(message = "Password is required!")
+    private String password;
 }
