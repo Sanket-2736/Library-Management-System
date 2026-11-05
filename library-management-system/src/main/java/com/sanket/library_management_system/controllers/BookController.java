@@ -23,17 +23,6 @@ public class BookController {
 
     private final BookService bookService;
 
-    // Create a new book
-    @PostMapping
-    public ResponseEntity<BookDTO> createBook(
-            @Valid @RequestBody BookDTO bookDTO
-    ) throws GenreException, BookException {
-
-        BookDTO created = bookService.createBook(bookDTO);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
-
     // Get book by ID
     @GetMapping("/{bookId}")
     public ResponseEntity<BookDTO> getBookById(
@@ -57,51 +46,6 @@ public class BookController {
     public ResponseEntity<List<BookDTO>> getAllBooks() {
 
         return ResponseEntity.ok(bookService.getAllBooks());
-    }
-
-    // Update book
-    @PutMapping("/{bookId}")
-    public ResponseEntity<BookDTO> updateBook(
-            @PathVariable Long bookId,
-            @Valid @RequestBody BookDTO bookDTO
-    ) throws BookException, GenreException {
-
-        return ResponseEntity.ok(
-                bookService.updateBook(bookId, bookDTO)
-        );
-    }
-
-    // Soft delete book
-    @DeleteMapping("/{bookId}")
-    public ResponseEntity<ApiResponse> deleteBook(
-            @PathVariable Long bookId
-    ) throws BookException {
-
-        bookService.deleteBook(bookId);
-
-        return ResponseEntity.ok(new ApiResponse("Book deletesed successfully!", true));
-    }
-
-    // Permanently delete book
-    @DeleteMapping("/{bookId}/permanent")
-    public ResponseEntity<ApiResponse> hardDeleteBook(
-            @PathVariable Long bookId
-    ) {
-
-        bookService.hardDeleteBook(bookId);
-
-        return ResponseEntity.ok(new ApiResponse("Book deleted permanently!", true));
-    }
-
-    // Bulk create books
-    @PostMapping("/bulk")
-    public ResponseEntity<List<BookDTO>> createBookBulk(
-            @Valid @RequestBody List<@Valid BookDTO> bookDTOs
-    ) throws GenreException, BookException {
-
-        List<BookDTO> created = bookService.createBookBulk(bookDTOs);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     // Search books with filters and pagination

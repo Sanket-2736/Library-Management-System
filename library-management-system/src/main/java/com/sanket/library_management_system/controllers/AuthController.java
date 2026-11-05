@@ -5,6 +5,8 @@ import com.sanket.library_management_system.exception.UserException;
 import com.sanket.library_management_system.payload.dto.UserDTO;
 import com.sanket.library_management_system.payload.request.ForgetPasswordRequest;
 import com.sanket.library_management_system.payload.request.LoginRequest;
+import com.sanket.library_management_system.payload.request.ResetTokenRequest;
+import com.sanket.library_management_system.payload.response.ApiResponse;
 import com.sanket.library_management_system.payload.response.AuthResponse;
 import com.sanket.library_management_system.services.AuthService;
 import jakarta.validation.Valid;
@@ -42,25 +44,23 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(
+    public ResponseEntity<ApiResponse> forgotPassword(
             @RequestBody @Valid ForgetPasswordRequest request
             ) throws UserException, EmailException {
 
         authService.createPasswordResetToken(request.getEmail());
 
-        return ResponseEntity.ok(
-                "Password reset link has been sent to your email."
-        );
+        return ResponseEntity.ok(new ApiResponse("Password reset link is sent to your inbox.", true));
+
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(
-            @RequestParam String token,
-            @RequestParam String newPassword
-    ) throws Exception {
+    public ResponseEntity<?> resetPassword(
+            @RequestBody @Valid ResetTokenRequest request
+            ) throws Exception {
 
-        authService.resetPassword(token, newPassword);
+        authService.resetPassword(request.getToken(), request.getPassword());
 
-        return ResponseEntity.ok("Password reset successfully.");
+        return ResponseEntity.ok(new ApiResponse("Password reset successfully.", true));
     }
 }

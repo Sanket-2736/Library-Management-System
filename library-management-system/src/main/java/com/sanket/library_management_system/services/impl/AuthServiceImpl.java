@@ -55,8 +55,8 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private final EmailService emailService;
 
-    @Value("S{frontend.url}")
-    private final String frontendUrl;
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     @Override
     public AuthResponse login(String username, String password) throws UserException {
@@ -79,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
 
         return AuthResponse.builder()
                 .jwt(jwt)
-                .title("Welcome back" + user.getFullName())
+                .title("Welcome back " + user.getFullName())
                 .message("Login successful!")
                 .user(UserMapper.toDTO(user))
                 .build();
@@ -132,7 +132,7 @@ public class AuthServiceImpl implements AuthService {
                 .jwt(jwt)
                 .title("Welcome " + created.getFullName())
                 .message("Registration successful!")
-                .user(UserMapper.toDTO(user))
+                .user(UserMapper.toDTO(saved))
                 .build();
     }
 
