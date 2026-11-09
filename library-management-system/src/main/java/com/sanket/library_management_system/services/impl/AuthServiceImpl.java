@@ -162,8 +162,6 @@ public class AuthServiceImpl implements AuthService {
         String body = "You requested to reset your password. Use this link(valid upto 5 minutes): " + resetLink;
 
         emailService.sendEmail(user.getEmail(), subject, body);
-
-
     }
 
     @Override

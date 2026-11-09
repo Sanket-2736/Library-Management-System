@@ -31,7 +31,7 @@ public class GlobalException {
         return ResponseEntity.status(status).body(response);
     }
 
-    @ExceptionHandler(BookException.class)
+    @ExceptionHandler({BookException.class, SubscriptionPlanException.class, SubscriptionException.class})
     public ResponseEntity<ErrorResponse> handleBookException(
             BookException e,
             HttpServletRequest request
