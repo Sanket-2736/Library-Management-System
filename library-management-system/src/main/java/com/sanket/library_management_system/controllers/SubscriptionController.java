@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @RestController
@@ -27,15 +27,21 @@ public class SubscriptionController {
 
     @PostMapping("/subscribe")
     public ResponseEntity<?> subscribe(@Valid @RequestBody SubscriptionDTO dto) throws UserException, SubscriptionPlanException {
-        SubscriptionDTO dto1 = subscriptionService.subscribe(dto);
-        return ResponseEntity.ok(dto1);
+        return ResponseEntity.ok(subscriptionService.subscribe(dto));
     }
 
     @PostMapping("/cancel/{subscriptionId}")
-    public ResponseEntity<?> cancelSubscription(@RequestParam Long subscriptionId, @RequestBody(required = false) String reason) throws UserException, SubscriptionPlanException {
-        SubscriptionDTO dto1 = subscriptionService.cancelSubscription(subscriptionId, reason);
-        return ResponseEntity.ok(dto1);
+    public ResponseEntity<?> cancelSubscription(
+            @PathVariable Long subscriptionId,
+            @RequestBody(required = false) String reason)
+            throws UserException, SubscriptionPlanException {
+
+        SubscriptionDTO dto =
+                subscriptionService.cancelSubscription(subscriptionId, reason);
+
+        return ResponseEntity.ok(dto);
     }
+
 
     @PostMapping("/activate")
     public ResponseEntity<?> activateSubscription(@RequestParam Long subscriptionId) throws UserException, SubscriptionPlanException, SubscriptionException {

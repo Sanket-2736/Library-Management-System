@@ -7,9 +7,14 @@ import com.sanket.library_management_system.mapper.SubscriptionMapper;
 import com.sanket.library_management_system.model.Subscription;
 import com.sanket.library_management_system.model.SubscriptionPlan;
 import com.sanket.library_management_system.model.User;
+import com.sanket.library_management_system.payload.domains.PaymentGateway;
+import com.sanket.library_management_system.payload.domains.PaymentType;
 import com.sanket.library_management_system.payload.dto.SubscriptionDTO;
+import com.sanket.library_management_system.payload.request.PaymentInitiateRequest;
+import com.sanket.library_management_system.payload.response.PaymentInitiateResponse;
 import com.sanket.library_management_system.repository.SubscriptionPlanRepository;
 import com.sanket.library_management_system.repository.SubscriptionRepository;
+import com.sanket.library_management_system.services.PaymentService;
 import com.sanket.library_management_system.services.SubscriptionService;
 import com.sanket.library_management_system.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +37,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
 
     @Autowired
+    private final PaymentService paymentService;
+
+    @Autowired
     private final SubscriptionPlanRepository subscriptionPlanRepository;
 
     @Autowired
@@ -40,7 +49,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionMapper subscriptionMapper;
 
     @Override
-    public SubscriptionDTO subscribe(SubscriptionDTO subscriptionDTO) throws UserException, SubscriptionPlanException {
+    public PaymentInitiateResponse subscribe(SubscriptionDTO subscriptionDTO) throws UserException, SubscriptionPlanException {
         User user = userService.getCurrentUser();
 
         SubscriptionPlan plan = subscriptionPlanRepository.findById(subscriptionDTO.getId())
@@ -55,8 +64,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         Subscription savedSubscription = subscriptionRepository.save(subscription);
 
+        PaymentInitiateRequest req = PaymentInitiateRequest.builder()
+                .userId(user.getId())
+                .subscriptionId(subscription.getId())
+                .paymentType(PaymentType.MEMBERSHIP)
+                .amount(subscription.getPrice())
+                .gateway(PaymentGateway.RAZORPAY)
+                .description("Library Subscription: " + plan.getName())
+                .build();
 
-        return subscriptionMapper.toDTO(savedSubscription);
+        return paymentService.initiatePayment(req);
     }
 
     @Override
