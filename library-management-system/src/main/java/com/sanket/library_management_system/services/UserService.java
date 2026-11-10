@@ -9,4 +9,5 @@ import java.util.List;
 public interface UserService {
     public User getCurrentUser() throws UserException;
     public List<UserDTO> getAllUsers();
+    public User findById(Long id) throws UserException;
 }

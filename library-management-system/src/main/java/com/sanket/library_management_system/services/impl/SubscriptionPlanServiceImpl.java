@@ -110,7 +110,10 @@ public class SubscriptionPlanServiceImpl implements SubscriptionPlanService {
 
     @Override
     public SubscriptionPlan getBySubscriptionPlanCode(String planCode) throws SubscriptionPlanException {
-        SubscriptionPlan plan = subscriptionPlanRepository.findByByPlanCode(planCode);
+        SubscriptionPlan plan = subscriptionPlanRepository.findByPlanCode(planCode)
+                .orElseThrow(
+                        () -> new SubscriptionPlanException("Plan not found!")
+                );
 
         if(plan == null) throw new SubscriptionPlanException("Plan not found!");
 
