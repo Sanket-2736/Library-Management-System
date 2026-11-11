@@ -147,9 +147,13 @@ public class BookLoanServiceImpl implements BookLoanService {
 
         if(!bookLoan.canRenew()) throw new BookException("Book loan can't be renewed!");
 
+        if(bookLoan.getRenewalCount() == null) {
+            throw new BookException("Invalid renewal count!");
+        }
+
         bookLoan.setDueDate(bookLoan.getDueDate().plusDays(request.getExtensionDays()));
 
-        bookLoan.setRenewalCount(bookLoan.getRenewalCount() - 1);
+        bookLoan.setRenewalCount(bookLoan.getRenewalCount() + 1);
 
         bookLoan.setNotes("Book renewd by user.");
 

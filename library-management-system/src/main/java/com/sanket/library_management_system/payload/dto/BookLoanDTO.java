@@ -29,6 +29,7 @@ public class BookLoanDTO {
 
     private LocalDate checkoutDate;
     private LocalDate returnDate;
+    private LocalDate dueDate;
 
     private Integer renewalCount;
     private Integer maxRenewals;
@@ -41,3 +42,4 @@ public class BookLoanDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
+

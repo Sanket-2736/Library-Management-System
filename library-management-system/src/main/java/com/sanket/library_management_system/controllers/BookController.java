@@ -10,12 +10,14 @@ import com.sanket.library_management_system.payload.response.PageResponse;
 import com.sanket.library_management_system.services.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
@@ -28,8 +30,15 @@ public class BookController {
     public ResponseEntity<BookDTO> getBookById(
             @PathVariable Long bookId
     ) throws BookException {
-
-        return ResponseEntity.ok(bookService.getBookById(bookId));
+        try {
+            log.info("Fetching book with id: {}", bookId);
+            BookDTO book = bookService.getBookById(bookId);
+            log.info("Book fetched successfully: {} (ISBN: {})", book.getTitle(), book.getIsbn());
+            return ResponseEntity.ok(book);
+        } catch (BookException e) {
+            log.error("Failed to fetch book with id: {}, Error: {}", bookId, e.getMessage());
+            throw e;
+        }
     }
 
     // Get book by ISBN
@@ -37,15 +46,29 @@ public class BookController {
     public ResponseEntity<BookDTO> getBookByISBN(
             @PathVariable String isbn
     ) throws BookException {
-
-        return ResponseEntity.ok(bookService.getBookByISBN(isbn));
+        try {
+            log.info("Fetching book with ISBN: {}", isbn);
+            BookDTO book = bookService.getBookByISBN(isbn);
+            log.info("Book fetched successfully: {}", book.getTitle());
+            return ResponseEntity.ok(book);
+        } catch (BookException e) {
+            log.error("Failed to fetch book with ISBN: {}, Error: {}", isbn, e.getMessage());
+            throw e;
+        }
     }
 
     // Get all books
     @GetMapping
     public ResponseEntity<List<BookDTO>> getAllBooks() {
-
-        return ResponseEntity.ok(bookService.getAllBooks());
+        try {
+            log.info("Fetching all books");
+            List<BookDTO> books = bookService.getAllBooks();
+            log.info("Successfully fetched {} books", books.size());
+            return ResponseEntity.ok(books);
+        } catch (Exception e) {
+            log.error("Failed to fetch all books, Error: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     // Search books with filters and pagination
@@ -53,27 +76,47 @@ public class BookController {
     public ResponseEntity<PageResponse<BookDTO>> searchBooks(
             @RequestBody BookSearchRequest request
     ) {
-
-        return ResponseEntity.ok(
-                bookService.searchBookWithFilters(request)
-        );
+        try {
+            log.info("Searching books with filters: title={}, author={}, genre={}, page={}, size={}", 
+                    request.getTitle(), request.getAuthor(), request.getGenreId(), request.getPage(), request.getSize());
+            PageResponse<BookDTO> result = bookService.searchBookWithFilters(request);
+            log.info("Book search completed, found {} records", result.getTotalElements());
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Book search failed, Error: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     // Get total active books
     @GetMapping("/stats/active")
     public ResponseEntity<Long> getTotalActiveBooks() {
-
-        return ResponseEntity.ok(bookService.getTotalActiveBooks());
+        try {
+            log.info("Fetching total active books count");
+            Long count = bookService.getTotalActiveBooks();
+            log.info("Total active books: {}", count);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            log.error("Failed to fetch active books count, Error: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     // Get total available books
     @GetMapping("/stats/available")
     public ResponseEntity<BookStatsResponse> getTotalAvailableBooks() {
-        long totalActiveBooks = bookService.getTotalActiveBooks();
-        long totalAvailableBooks = bookService.getTotalAvailableBooks();
-        return ResponseEntity.ok(
-                new BookStatsResponse(totalActiveBooks, totalAvailableBooks)
-        );
+        try {
+            log.info("Fetching book statistics (active and available)");
+            long totalActiveBooks = bookService.getTotalActiveBooks();
+            long totalAvailableBooks = bookService.getTotalAvailableBooks();
+            log.info("Book stats - Active: {}, Available: {}", totalActiveBooks, totalAvailableBooks);
+            return ResponseEntity.ok(
+                    new BookStatsResponse(totalActiveBooks, totalAvailableBooks)
+            );
+        } catch (Exception e) {
+            log.error("Failed to fetch book statistics, Error: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public static class BookStatsResponse{
