@@ -43,7 +43,7 @@ public class BookLoan {
     @Column(name="checkout_date", nullable = false)
     private LocalDate checkoutDate;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private LocalDate returnDate;
 
     @Column(nullable = false)

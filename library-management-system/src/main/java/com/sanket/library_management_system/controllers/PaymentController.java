@@ -1,3 +1,4 @@
+
 package com.sanket.library_management_system.controllers;
 
 import com.sanket.library_management_system.payload.dto.PaymentDTO;
@@ -26,14 +27,21 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyPayment(@Valid @RequestBody PaymentVerifyRequest request){
+    public ResponseEntity<?> verifyPayment(
+            @Valid @RequestBody PaymentVerifyRequest request
+    ) {
         try {
-            log.info("Payment verification requested for orderId: {}", request.getOrderId());
+            log.info("Received request to verify payment");
+
             PaymentDTO dto = paymentService.verifyPayment(request);
-            log.info("Payment verified successfully for orderId: {}", request.getOrderId());
+
+            log.info("Payment verified successfully");
+
             return ResponseEntity.ok(dto);
-        } catch (Exception e){
-            log.error("Payment verification failed for orderId: {}, Error: {}", request.getOrderId(), e.getMessage(), e);
+
+        } catch (Exception e) {
+            log.error("Payment verification failed. Error: {}", e.getMessage(), e);
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse(e.getMessage(), false));
         }
@@ -46,18 +54,21 @@ public class PaymentController {
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortDir
     ) {
-        try {
-            log.info("Fetching all payments with pagination - page: {}, size: {}, sortBy: {}, sortDir: {}", 
-                    page, size, sortBy, sortDir);
-            Sort sort = sortDir.equalsIgnoreCase("DESC") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-            Pageable pageable = PageRequest.of(page, size, sort);
-            Page<PaymentDTO> payments = paymentService.getAllPayments(pageable);
-            log.info("Successfully fetched {} payments", payments.getContent().size());
-            return ResponseEntity.ok(payments);
-        } catch (Exception e) {
-            log.error("Failed to fetch payments, Error: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("Failed to fetch payments: " + e.getMessage(), false));
-        }
+
+        log.info("Received request to fetch payments. Page: {}, Size: {}, SortBy: {}, SortDir: {}",
+                page, size, sortBy, sortDir);
+
+        Sort sort = sortDir.equalsIgnoreCase("DESC")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<PaymentDTO> payments = paymentService.getAllPayments(pageable);
+
+        log.info("Successfully fetched payments. Total elements: {}, Total pages: {}, Current page: {}",
+                payments.getTotalElements(), payments.getTotalPages(), payments.getNumber());
+
+        return ResponseEntity.ok(payments);
     }
 }

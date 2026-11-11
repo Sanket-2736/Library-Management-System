@@ -1,3 +1,4 @@
+
 package com.sanket.library_management_system.controllers;
 
 import com.sanket.library_management_system.exception.BookException;
@@ -15,94 +16,83 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/admin/book")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminBookController {
 
     @Autowired
     private final BookService bookService;
 
-    // Create a new book
     @PostMapping
     public ResponseEntity<BookDTO> createBook(
             @Valid @RequestBody BookDTO bookDTO
     ) throws GenreException, BookException {
-        try {
-            log.info("Creating new book: title={}, isbn={}, author={}", 
-                    bookDTO.getTitle(), bookDTO.getIsbn(), bookDTO.getAuthor());
-            BookDTO created = bookService.createBook(bookDTO);
-            log.info("Book created successfully with id: {}", created.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (Exception e) {
-            log.error("Failed to create book, Error: {}", e.getMessage(), e);
-            throw e;
-        }
+
+        log.info("Received request to create a new book");
+
+        BookDTO created = bookService.createBook(bookDTO);
+
+        log.info("Book created successfully with ID: {}", created.getId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    // Update book
     @PutMapping("/{bookId}")
     public ResponseEntity<BookDTO> updateBook(
             @PathVariable Long bookId,
             @Valid @RequestBody BookDTO bookDTO
     ) throws BookException, GenreException {
-        try {
-            log.info("Updating book with id: {}", bookId);
-            BookDTO updated = bookService.updateBook(bookId, bookDTO);
-            log.info("Book updated successfully: {}", bookId);
-            return ResponseEntity.ok(updated);
-        } catch (Exception e) {
-            log.error("Failed to update book with id: {}, Error: {}", bookId, e.getMessage(), e);
-            throw e;
-        }
+
+        log.info("Received request to update book with ID: {}", bookId);
+
+        BookDTO updated = bookService.updateBook(bookId, bookDTO);
+
+        log.info("Book updated successfully with ID: {}", bookId);
+
+        return ResponseEntity.ok(updated);
     }
 
-    // Soft delete book
     @DeleteMapping("/{bookId}")
     public ResponseEntity<ApiResponse> deleteBook(
             @PathVariable Long bookId
     ) throws BookException {
-        try {
-            log.info("Soft deleting book with id: {}", bookId);
-            bookService.deleteBook(bookId);
-            log.info("Book soft deleted successfully: {}", bookId);
-            return ResponseEntity.ok(new ApiResponse("Book deleted successfully!", true));
-        } catch (BookException e) {
-            log.error("Failed to soft delete book with id: {}, Error: {}", bookId, e.getMessage());
-            throw e;
-        }
+
+        log.info("Received request to soft delete book with ID: {}", bookId);
+
+        bookService.deleteBook(bookId);
+
+        log.info("Book soft deleted successfully with ID: {}", bookId);
+
+        return ResponseEntity.ok(new ApiResponse("Book deletesed successfully!", true));
     }
 
-    // Permanently delete book
     @DeleteMapping("/{bookId}/permanent")
     public ResponseEntity<ApiResponse> hardDeleteBook(
             @PathVariable Long bookId
     ) {
-        try {
-            log.info("Hard deleting book with id: {}", bookId);
-            bookService.hardDeleteBook(bookId);
-            log.info("Book hard deleted permanently: {}", bookId);
-            return ResponseEntity.ok(new ApiResponse("Book deleted permanently!", true));
-        } catch (Exception e) {
-            log.error("Failed to hard delete book with id: {}, Error: {}", bookId, e.getMessage(), e);
-            throw e;
-        }
+
+        log.warn("Received request to permanently delete book with ID: {}", bookId);
+
+        bookService.hardDeleteBook(bookId);
+
+        log.info("Book permanently deleted with ID: {}", bookId);
+
+        return ResponseEntity.ok(new ApiResponse("Book deleted permanently!", true));
     }
 
-    // Bulk create books
     @PostMapping("/bulk")
     public ResponseEntity<List<BookDTO>> createBookBulk(
             @Valid @RequestBody List<@Valid BookDTO> bookDTOs
     ) throws GenreException, BookException {
-        try {
-            log.info("Bulk creating {} books", bookDTOs.size());
-            List<BookDTO> created = bookService.createBookBulk(bookDTOs);
-            log.info("Successfully created {} books in bulk", created.size());
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (Exception e) {
-            log.error("Failed to bulk create books, Error: {}", e.getMessage(), e);
-            throw e;
-        }
+
+        log.info("Received request to bulk create books. Number of books: {}", bookDTOs.size());
+
+        List<BookDTO> created = bookService.createBookBulk(bookDTOs);
+
+        log.info("Bulk book creation completed successfully. Number of books created: {}", created.size());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }

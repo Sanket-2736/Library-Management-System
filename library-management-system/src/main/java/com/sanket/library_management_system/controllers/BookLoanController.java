@@ -1,3 +1,4 @@
+
 package com.sanket.library_management_system.controllers;
 
 import com.sanket.library_management_system.domain.BookLoanStatus;
@@ -12,7 +13,6 @@ import com.sanket.library_management_system.services.BookLoanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,20 +23,27 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class BookLoanController {
 
-    @Autowired
     private final BookLoanService bookLoanService;
 
     @PostMapping("/checkout")
     public ResponseEntity<?> checkoutBook(
             @Valid @RequestBody CheckoutRequest request
-            ){
+    ) {
         try {
-            log.info("Checkout request received for book id: {}", request.getBookId());
-            var response = bookLoanService.checkoutBook(request);
-            log.info("Checkout successful for book id: {}", request.getBookId());
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+            log.info("Checkout request received for book ID: {}", request.getBookId());
+
+            ResponseEntity<?> response = new ResponseEntity<>(
+                    bookLoanService.checkoutBook(request),
+                    HttpStatus.CREATED
+            );
+
+            log.info("Book checkout completed successfully for book ID: {}", request.getBookId());
+
+            return response;
         } catch (Exception e) {
-            log.error("Checkout failed for book id: {}, Error: {}", request.getBookId(), e.getMessage(), e);
+            log.error("Book checkout failed for book ID: {}. Error: {}",
+                    request.getBookId(), e.getMessage(), e);
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse(e.getMessage(), false));
         }
@@ -46,97 +53,93 @@ public class BookLoanController {
     public ResponseEntity<?> checkoutBookForUser(
             @PathVariable Long userId,
             @Valid @RequestBody CheckoutRequest request
-    ) {
-        try {
-            log.info("Checkout request received for user id: {} and book id: {}", userId, request.getBookId());
-            var response = bookLoanService.checkoutBookForUser(userId, request);
-            log.info("Checkout successful for user id: {} and book id: {}", userId, request.getBookId());
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception e) {
-            log.error("Checkout failed for user id: {} and book id: {}, Error: {}", userId, request.getBookId(), e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse(e.getMessage(), false));
-        }
+    ) throws Exception {
+
+        log.info("Admin checkout request received for user ID: {}, book ID: {}",
+                userId, request.getBookId());
+
+        Object response = bookLoanService.checkoutBookForUser(userId, request);
+
+        log.info("Book checkout completed successfully for user ID: {}, book ID: {}",
+                userId, request.getBookId());
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/checkin")
     public ResponseEntity<?> checkin(
             @Valid @RequestBody CheckinRequest request
-            ) {
-        try {
-            log.info("Checkin request received for book loan id: {}", request.getBookLoanId());
-            var response = bookLoanService.checkinBook(request);
-            log.info("Checkin successful for book loan id: {}", request.getBookLoanId());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Checkin failed for book loan id: {}, Error: {}", request.getBookLoanId(), e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse(e.getMessage(), false));
-        }
+    ) throws Exception {
+
+        log.info("Book checkin request received");
+
+        Object response = bookLoanService.checkinBook(request);
+
+        log.info("Book checkin completed successfully");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/renew")
     public ResponseEntity<?> renew(
             @Valid @RequestBody RenewalRequest request
-            ) {
-        try {
-            log.info("Renewal request received for book loan id: {}", request.getBookLoanId());
-            var response = bookLoanService.renewCheckout(request);
-            log.info("Renewal successful for book loan id: {}", request.getBookLoanId());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Renewal failed for book loan id: {}, Error: {}", request.getBookLoanId(), e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse(e.getMessage(), false));
-        }
+    ) throws BookException {
+
+        log.info("Book loan renewal request received");
+
+        Object response = bookLoanService.renewCheckout(request);
+
+        log.info("Book loan renewed successfully");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/my")
     public ResponseEntity<?> getMyBookLoans(
-            @RequestParam(required = false)BookLoanStatus status,
+            @RequestParam(required = false) BookLoanStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-            ) {
-        try {
-            log.info("Fetching user's book loans with status: {}, page: {}, size: {}", status, page, size);
-            var response = bookLoanService.getMyBookLoans(status, page, size);
-            log.info("Successfully fetched user's book loans");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (UserException e) {
-            log.error("Failed to fetch user's book loans, Error: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse(e.getMessage(), false));
-        }
+    ) throws UserException {
+
+        log.info("Request received to fetch user's book loans. Status: {}, Page: {}, Size: {}",
+                status, page, size);
+
+        Object response = bookLoanService.getMyBookLoans(status, page, size);
+
+        log.info("Successfully fetched user's book loans");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/admin/search")
     public ResponseEntity<?> getAllBookLoans(
             @RequestBody BookLoanSearchRequest request
-            ){
+    ) {
         try {
-            log.info("Admin search book loans requested with filters: userId={}, bookId={}, overdueOnly={}", 
-                    request.getUserId(), request.getBookId(), request.getOverdueOnly());
-            var response = bookLoanService.getBookLoans(request);
-            log.info("Book loans search completed, found {} records", response.getTotalElements());
+            log.info("Admin request received to search book loans");
+
+            Object response = bookLoanService.getBookLoans(request);
+
+            log.info("Book loan search completed successfully");
+
             return ResponseEntity.ok(response);
         } catch (UserException e) {
-            log.error("Admin book loans search failed, Error: {}", e.getMessage(), e);
+            log.error("Failed to search book loans. Error: {}", e.getMessage(), e);
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse("Failed to search loans: " + e.getMessage(), false));
         }
     }
 
     @PostMapping("/admin/update-overdue")
-    public ResponseEntity<?> updateOverdueBookLoans(){
-        try {
-            log.info("Admin initiated update of overdue book loans");
-            int updateCount = bookLoanService.updateOverdueBookLoan();
-            log.info("Successfully updated {} overdue book loans", updateCount);
-            return ResponseEntity.ok(new ApiResponse("Overdue book loans are updated! Updated count: " + updateCount, true));
-        } catch (Exception e) {
-            log.error("Failed to update overdue book loans, Error: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("Failed to update overdue loans: " + e.getMessage(), false));
-        }
+    public ResponseEntity<?> updateOverdueBookLoans() {
+
+        log.info("Request received to update overdue book loans");
+
+        int updateCount = bookLoanService.updateOverdueBookLoan();
+
+        log.info("Overdue book loan update completed. Number of loans updated: {}", updateCount);
+
+        return ResponseEntity.ok(new ApiResponse("Overdue book loans are updated!", true));
     }
 }
