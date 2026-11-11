@@ -1,9 +1,15 @@
 package com.sanket.library_management_system.payload.request;
 
 import com.sanket.library_management_system.domain.BookLoanStatus;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookLoanSearchRequest {
 
     private Long userId;

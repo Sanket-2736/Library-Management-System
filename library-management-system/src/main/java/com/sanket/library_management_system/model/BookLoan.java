@@ -52,6 +52,8 @@ public class BookLoan {
     @Column(nullable = false)
     private Integer maxRenewals = 2;
 
+//    private Boolean isActive = false;
+
     @Column(length = 500)
     private String notes;
 
@@ -71,4 +73,12 @@ public class BookLoan {
 
 //    @Column(nullable = false)
     private LocalDate dueDate;
+
+    public Boolean isActive(){
+        return status == BookLoanStatus.OVERDUE || status == BookLoanStatus.CHECKED_OUT;
+    }
+
+    public boolean canRenew(){
+        return status == BookLoanStatus.CHECKED_OUT && !isOverdue && renewalCount < maxRenewals;
+    }
 }

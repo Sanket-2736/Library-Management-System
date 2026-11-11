@@ -22,6 +22,8 @@ public class BookLoanDTO {
     private Long userId;
     private Long bookId;
 
+//    private Boolean isActive;
+
     private BookLoanType type;
     private BookLoanStatus status;
 

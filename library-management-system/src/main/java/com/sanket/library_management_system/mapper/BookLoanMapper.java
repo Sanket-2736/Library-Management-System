@@ -16,6 +16,7 @@ public class BookLoanMapper {
 
         return BookLoanDTO.builder()
                 .id(bookLoan.getId())
+//                .isActive(bookLoan.getIsActive())
                 .userId(bookLoan.getUser() != null ? bookLoan.getUser().getId() : null)
                 .bookId(bookLoan.getBook() != null ? bookLoan.getBook().getId() : null)
                 .type(bookLoan.getType())
@@ -41,6 +42,7 @@ public class BookLoanMapper {
         return BookLoan.builder()
                 .id(dto.getId())
                 .type(dto.getType())
+//                .isActive(dto.getIsActive())
                 .status(dto.getStatus())
                 .checkoutDate(dto.getCheckoutDate())
                 .returnDate(dto.getReturnDate())
