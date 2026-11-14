@@ -4,6 +4,7 @@ package com.sanket.library_management_system.repository;
 import com.sanket.library_management_system.domain.BookLoanStatus;
 import com.sanket.library_management_system.model.BookLoan;
 import com.sanket.library_management_system.model.User;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -95,4 +96,6 @@ public interface BookLoanRepository extends JpaRepository<BookLoan, Long> {
             @Param("endDate") LocalDate endDate,
             Pageable pageable
     );
+
+    boolean existsByUserIdAndBookIdAndStatus(Long userId, @NotNull(message = "Book ID is required!") Long bookId, BookLoanStatus bookLoanStatus);
 }

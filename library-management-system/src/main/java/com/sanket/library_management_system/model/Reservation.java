@@ -32,6 +32,7 @@ public class Reservation {
     private LocalDateTime reservedAt;
 
     private LocalDateTime availableAt;
+    private LocalDateTime availableUntil;
 
     @Column(name = "fulfilled_at")
     private LocalDateTime fulfilledAt;
@@ -53,4 +54,11 @@ public class Reservation {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    public boolean canBeCancelled(){
+        return (this.status == ReservationStatus.AVAILABLE) || (status == ReservationStatus.PENDING);
+    }
+
+    public boolean hasExpired(){
+        return status == ReservationStatus.AVAILABLE && availableAt != null && LocalDateTime.now().isAfter(availableAt);
+    }
 }
