@@ -1,11 +1,18 @@
 export interface SubscriptionPlan {
   id: number;
+  planCode: string;
   name: string;
   description?: string;
   maxBooksAllowed: number;
   durationDays: number;
   price: number;
-  active: boolean;
+  currencyCode?: string;
+  maxDaysPerBook: number;
+  displayOrder?: number;
+  isActive: boolean;
+  isFeatured?: boolean;
+  badgeText?: string;
+  adminNotes?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -16,10 +23,14 @@ export interface Subscription {
   planId: number;
   planName?: string;
   maxBooksAllowed?: number;
+  maxDaysPerBook?: number;
   startDate: string;
   endDate: string;
   status: SubscriptionStatus;
   price?: number;
+  planCode?: string;
+  durationDays?: number;
+  isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

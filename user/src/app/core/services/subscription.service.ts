@@ -20,6 +20,7 @@ export class SubscriptionService {
 
   /**
    * Get all subscription plans
+   * GET /api/subscription-plans
    */
   getAllPlans(): Observable<SubscriptionPlan[]> {
     return this.http.get<SubscriptionPlan[]>(this.planUrl);
@@ -27,6 +28,7 @@ export class SubscriptionService {
 
   /**
    * Get subscription plan by ID
+   * GET /api/subscription-plans/{id}
    */
   getPlanById(id: number): Observable<SubscriptionPlan> {
     return this.http.get<SubscriptionPlan>(`${this.planUrl}/${id}`);
@@ -34,13 +36,16 @@ export class SubscriptionService {
 
   /**
    * Subscribe to a plan
+   * POST /api/subscriptions/subscribe
+   * Returns: PaymentInitiateResponse
    */
-  subscribe(request: CreateSubscriptionRequest): Observable<Subscription> {
-    return this.http.post<Subscription>(`${this.apiUrl}/subscribe`, request);
+  subscribe(request: CreateSubscriptionRequest): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/subscribe`, request);
   }
 
   /**
    * Get current user's active subscription
+   * GET /api/subscriptions/user/active
    */
   getUserActiveSubscription(): Observable<Subscription> {
     return this.http.get<Subscription>(`${this.apiUrl}/user/active`);
@@ -48,6 +53,7 @@ export class SubscriptionService {
 
   /**
    * Get subscription by ID
+   * GET /api/subscriptions/{id}
    */
   getSubscriptionById(id: number): Observable<Subscription> {
     return this.http.get<Subscription>(`${this.apiUrl}/${id}`);
@@ -55,6 +61,7 @@ export class SubscriptionService {
 
   /**
    * Cancel subscription
+   * POST /api/subscriptions/cancel/{subscriptionId}
    */
   cancelSubscription(
     subscriptionId: number,
@@ -69,6 +76,7 @@ export class SubscriptionService {
 
   /**
    * Activate subscription (after payment)
+   * POST /api/subscriptions/activate
    */
   activateSubscription(subscriptionId: number): Observable<Subscription> {
     return this.http.post<Subscription>(

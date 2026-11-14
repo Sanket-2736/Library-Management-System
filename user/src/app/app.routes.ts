@@ -58,8 +58,15 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('./features/subscriptions/subscriptions.component').then(
-            (m) => m.SubscriptionsComponent,
+          import('./features/subscriptions/subscription-plans/subscription-plans.component').then(
+            (m) => m.SubscriptionPlansComponent,
+          ),
+      },
+      {
+        path: 'my-subscription',
+        loadComponent: () =>
+          import('./features/subscriptions/my-subscription/my-subscription.component').then(
+            (m) => m.MySubscriptionComponent,
           ),
       },
       {
@@ -74,8 +81,32 @@ export const routes: Routes = [
   {
     path: 'book-loans',
     canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/book-loans/my-loans/my-loans.component').then((m) => m.MyLoansComponent),
+      },
+      {
+        path: 'history',
+        loadComponent: () =>
+          import('./features/book-loans/book-loans.component').then((m) => m.BookLoansComponent),
+      },
+    ],
+  },
+  {
+    path: 'fines',
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/book-loans/book-loans.component').then((m) => m.BookLoansComponent),
+      import('./features/fines/my-fines/my-fines.component').then((m) => m.MyFinesComponent),
+  },
+  {
+    path: 'reservations',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/reservations/my-reservations/my-reservations.component').then(
+        (m) => m.MyReservationsComponent,
+      ),
   },
   {
     path: 'payments',
